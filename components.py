@@ -48,6 +48,7 @@ class Simulation:
 
     def draw(self, screen, default_color = (150, 150, 150)):
         self.grid.draw(screen, default_color)
+        self.cursor(screen)
 
     def add_particle(self, row, col, type):
         self.grid.add(row, col, type)
@@ -112,6 +113,25 @@ class Simulation:
                     self.add_particle(current_row, current_col, self.particle_type)
                 elif self.action == "erase":
                     self.erase_particle(current_row, current_col)
+
+    def cursor(self, screen):
+        x, y = pygame.mouse.get_pos()
+        row = y // self.cell_size
+        col = x // self.cell_size
+
+        br_size = self.brush * self.cell_size
+        color = (0, 0, 0) 
+        if self.action == "erase":
+            color = (255, 255, 255)
+        else:
+            if self.particle_type == SandParticle:
+                color = (180, 140, 60)
+            elif self.particle_type == Water:
+                color = (93, 151, 231)
+            elif self.particle_type == Rock:
+                color = (135, 135, 135)
+
+        pygame.draw.rect(screen, color, (x, y, br_size, br_size))        
 
 
 class Particle:

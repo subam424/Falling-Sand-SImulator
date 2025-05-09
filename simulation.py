@@ -25,4 +25,4 @@ while True:
     simulation.draw(screen, BG)
 
     pygame.display.flip()
-    clock.tick(FPS)
+    clock.tick(FPS) 
