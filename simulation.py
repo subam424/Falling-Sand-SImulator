@@ -10,7 +10,8 @@ HEIGHT = 700
 FPS = 120
 BG = (29, 29, 29)
 CELL_SIZE = 8
-type = SandParticle
+particle_type = SandParticle
+action = "create"
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Falling Sand")
@@ -28,16 +29,23 @@ while True:
             if event.key == pygame.K_SPACE:
                 simulation.reset()
             elif event.key == pygame.K_s:
-                type = SandParticle
+                particle_type = SandParticle
             elif event.key == pygame.K_w:
-                type = Water
+                particle_type = Water
+            elif event.key == pygame.K_c:
+                action = "create"
+            elif event.key == pygame.K_e:
+                action = "erase"
         
     clicks = pygame.mouse.get_pressed()
     if clicks[0]:
         x, y = pygame.mouse.get_pos()
         row = y // CELL_SIZE
         col = x // CELL_SIZE
-        simulation.add_particle(row, col, type)
+        if action == "create":
+            simulation.add_particle(row, col, particle_type)
+        elif action == "erase":
+            simulation.erase_particle(row, col)
 
     simulation.update()
 
