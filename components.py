@@ -1,4 +1,5 @@
 import pygame
+import sys
 import random
 import colorsys
 
@@ -40,6 +41,9 @@ class Grid:
 class Simulation:
     def __init__(self, width, height, cell_size):
         self.grid = Grid(width, height, cell_size)
+        self.particle_type = SandParticle
+        self.action = "create"
+        self.cell_size = cell_size
 
     def draw(self, screen, default_color = (150, 150, 150)):
         self.grid.draw(screen, default_color)
@@ -62,6 +66,38 @@ class Simulation:
 
     def reset(self):
         self.grid.cells = [[None for _ in range(self.grid.cols)] for _ in range(self.grid.rows)]
+
+    def handle_events(self):
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                self.handle_keys(event)
+        self.handle_mouse()
+
+    def handle_keys(self, event):
+        if event.key == pygame.K_SPACE:
+            self.reset()
+        elif event.key == pygame.K_s:
+            self.particle_type = SandParticle
+        elif event.key == pygame.K_w:
+            self.particle_type = Water
+        elif event.key == pygame.K_c:
+            self.action = "create"
+        elif event.key == pygame.K_e:
+            self.action = "erase"
+
+    def handle_mouse(self):
+        clicks = pygame.mouse.get_pressed()
+        if clicks[0]:
+            x, y = pygame.mouse.get_pos()
+            row = y // self.cell_size
+            col = x // self.cell_size
+            if self.action == "create":
+                self.add_particle(row, col, self.particle_type)
+            elif self.action == "erase":
+                self.erase_particle(row, col)
 
 
 class SandParticle:
