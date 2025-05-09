@@ -1,5 +1,5 @@
 import pygame
-from components import Simulation, SandParticle
+from components import Simulation
 
 pygame.init()
 
@@ -8,8 +8,7 @@ WIDTH = 1000
 HEIGHT = 700
 FPS = 120
 BG = (29, 29, 29)
-CELL_SIZE = 8
-particle_type = SandParticle
+CELL_SIZE = 7
 
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("Falling Sand")

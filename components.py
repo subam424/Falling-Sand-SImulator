@@ -18,7 +18,7 @@ class Grid:
                 pygame.draw.rect(screen, color, (col * self.cell_size, row * self.cell_size, self.cell_size, self.cell_size))
 
     def add(self, row, col, type):
-        if 0 <= row < self.rows and 0 <= col < self.cols:
+        if 0 <= row < self.rows and 0 <= col < self.cols and self.cells[row][col] == None:
             self.cells[row][col] = type()
 
     def erase(self, row, col):
@@ -44,6 +44,7 @@ class Simulation:
         self.particle_type = SandParticle
         self.action = "create"
         self.cell_size = cell_size
+        self.brush = 2
 
     def draw(self, screen, default_color = (150, 150, 150)):
         self.grid.draw(screen, default_color)
@@ -81,8 +82,13 @@ class Simulation:
             self.reset()
         elif event.key == pygame.K_s:
             self.particle_type = SandParticle
+            self.brush = 2
         elif event.key == pygame.K_w:
             self.particle_type = Water
+            self.brush = 2
+        elif event.key == pygame.K_r:
+            self.particle_type = Rock
+            self.brush = 3
         elif event.key == pygame.K_c:
             self.action = "create"
         elif event.key == pygame.K_e:
@@ -94,13 +100,29 @@ class Simulation:
             x, y = pygame.mouse.get_pos()
             row = y // self.cell_size
             col = x // self.cell_size
-            if self.action == "create":
-                self.add_particle(row, col, self.particle_type)
-            elif self.action == "erase":
-                self.erase_particle(row, col)
+            self.brush_size(row, col)
+
+    def brush_size(self, row, col):
+        for r in range(self.brush):
+            for c in range(self.brush):
+                current_row = r + row
+                current_col = c + col
+
+                if self.action == "create":
+                    self.add_particle(current_row, current_col, self.particle_type)
+                elif self.action == "erase":
+                    self.erase_particle(current_row, current_col)
 
 
-class SandParticle:
+class Particle:
+    def __init__(self):
+        self.color = (255, 255, 255)
+
+    def update(self, grid, row, col):
+        return row, col
+
+
+class SandParticle(Particle):
     def __init__(self):
         self.color = self.random_color()
 
@@ -123,7 +145,7 @@ class SandParticle:
                     return row+1, new_col
         return row, col
     
-class Water():
+class Water(Particle):
     def __init__(self):
         colors = [(65, 107, 223),(93, 151, 231),(62, 164, 240),(0, 112, 255)]
         self.color = random.choice(colors)
@@ -143,3 +165,8 @@ class Water():
                 if grid.is_empty(row, new_col):
                     return row, new_col
         return row, col
+    
+class Rock(Particle):
+    def __init__(self):
+        colors = [(128, 128, 128),(146, 141, 133),(135, 135, 135)]
+        self.color = random.choice(colors)
